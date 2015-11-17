@@ -17,7 +17,7 @@ main() {
 			--libexecdir="$prefix/lib" \
 			--enable-multi-arch
 		make && make install
-		tar zcf "/glibc-bin-$version.tar.gz" "$prefix"
+		tar --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
 	} >&2
 
 	[[ $STDOUT ]] && cat "/glibc-bin-$version.tar.gz"
