@@ -3,7 +3,7 @@
 set -eo pipefail; [[ "$TRACE" ]] && set -x
 
 main() {
-	declare version="$1" prefix="${2:-/usr/glibc-compat}"
+	declare version="${1:-$GLIBC_VERSION}" prefix="${2:-$PREFIX_DIR}"
 
 	: "${version:?}" "${prefix:?}"
 
