@@ -7,7 +7,7 @@ A glibc binary package builder in Docker. Produces a glibc binary package that c
 Build a glibc package based on version 2.21 with a prefix of `/usr/glibc-compat`:
 
 ```
-docker run --rm -it -e STDOUT=1 andyshinn/glibc-builder 2.21 /usr/glibc-compat > glibc-bin.tar.gz
+docker run --rm -e STDOUT=1 andyshinn/glibc-builder 2.21 /usr/glibc-compat > glibc-bin.tar.gz
 ```
 
 You can also keep the container around and copy out the resulting file:
