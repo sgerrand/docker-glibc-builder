@@ -1,0 +1,16 @@
+general:
+  artifacts:
+    - "artifacts"
+machine:
+  environment:
+    GLIBC_VERSION: 2.23
+  services:
+    - docker
+dependencies:
+  override:
+    - docker pull sgerrand/glibc-builder
+test:
+  pre:
+    - mkdir -p artifacts
+  override:
+    - "docker run --rm -e STDOUT=1 sgerrand/glibc-builder $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz"
