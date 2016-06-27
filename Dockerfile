@@ -1,4 +1,4 @@
-FROM ubuntu-debootstrap:14.04
+FROM multiarch/ubuntu-debootstrap:amd64-slim
 ENV PREFIX_DIR /usr/glibc-compat
 ENV GLIBC_VERSION 2.23
 RUN apt-get -q update \
