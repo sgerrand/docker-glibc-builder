@@ -3,7 +3,7 @@
 set -eo pipefail; [[ "$TRACE" ]] && set -x
 
 main() {
-	declare version="${1:-$GLIBC_VERSION}" prefix="${2:-$PREFIX_DIR}"
+	declare version="${1:-$GLIBC_VERSION}" prefix="${2:-$PREFIX_DIR}" arch="${3:-$ARCH}"
 
 	: "${version:?}" "${prefix:?}"
 
@@ -15,12 +15,13 @@ main() {
 			--prefix="$prefix" \
 			--libdir="$prefix/lib" \
 			--libexecdir="$prefix/lib" \
+			--host=${arch}-linux \
 			--enable-multi-arch
 		make && make install
-		tar --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
+		tar --hard-dereference -zcf "/glibc-bin-$version-$arch.tar.gz" "$prefix"
 	} >&2
 
-	[[ $STDOUT ]] && cat "/glibc-bin-$version.tar.gz"
+	[[ $STDOUT ]] && cat "/glibc-bin-$version-$arch.tar.gz"
 }
 
 main "$@"
