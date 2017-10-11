@@ -3,7 +3,7 @@ general:
     - "artifacts"
 machine:
   environment:
-    GLIBC_VERSION: 2.25
+    GLIBC_VERSION: 2.26
   pre:
     - sudo mv /usr/local/go /usr/local/go-1.6.2
     - wget -q -O /tmp/go1.7.3.tgz https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz
