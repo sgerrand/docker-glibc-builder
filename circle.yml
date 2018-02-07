@@ -32,4 +32,3 @@ deployment:
     owner: sgerrand
     commands:
       - ghr -u sgerrand --prerelease --delete unreleased artifacts
-      - ghr -u sgerrand --prerelease unreleased artifacts
