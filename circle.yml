@@ -20,7 +20,7 @@ test:
   pre:
     - mkdir -p artifacts
   override:
-    - "docker run --rm -e STDOUT=1 sgerrand/glibc-builder $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz"
+    - "docker run --rm -e STDOUT=1 sgerrand/glibc-builder $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz"
 deployment:
   release:
     tag: /[0-9]+(\.[0-9]+){1,2}(\-r\d+)?$/
