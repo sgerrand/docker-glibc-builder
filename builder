@@ -15,7 +15,8 @@ main() {
 			--prefix="$prefix" \
 			--libdir="$prefix/lib" \
 			--libexecdir="$prefix/lib" \
-			--enable-multi-arch
+			--enable-multi-arch \
+			--enable-stack-protector=strong
 		make && make install
 		tar --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
 	} >&2
