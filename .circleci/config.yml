@@ -17,29 +17,49 @@ jobs:
       - store_artifacts:
           path: artifacts
     working_directory: ~/docker-glibc-builder
-  upload:
+  upload-master:
     docker:
-      - image: golang:1.9-alpine
+      - image: golang:alpine
     steps:
       - run: apk add --no-cache git openssh-client
       - checkout
       - run: go get github.com/tcnksm/ghr
       - deploy:
           name: Upload to GitHub release
-          command: |
-            if [ ! -z "$CIRCLE_TAG" ]; then
-              ghr -u sgerrand $CIRCLE_TAG artifacts/
-            fi
-
-            if [ "$CIRCLE_TAG" = "master" ]; then
-              ghr -u sgerrand --prerelease --delete unreleased artifacts
-            fi
+          command: ghr -u sgerrand --prerelease --delete unreleased artifacts
+    working_directory: ~/docker-glibc-builder
+  upload-tag:
+    docker:
+      - image: golang:alpine
+    steps:
+      - run: apk add --no-cache git openssh-client
+      - checkout
+      - run: go get github.com/tcnksm/ghr
+      - deploy:
+          name: Upload to GitHub release
+          command: ghr -u sgerrand $CIRCLE_TAG artifacts/
     working_directory: ~/docker-glibc-builder
 workflows:
   version: 2
   build-compile-upload:
     jobs:
-      - build
-      - upload:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - upload-master:
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /.*/
+          requires:
+            - build
+      - upload-tag:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
           requires:
             - build
