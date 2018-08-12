@@ -1,6 +1,14 @@
 version: 2
+references:
+  basic-job: &basic-job
+    working_directory: ~/docker-glibc-builder
+  artefact-upload-job: &artefact-upload-job
+    <<: *basic-job
+    docker:
+      - image: golang:alpine
 jobs:
   build:
+    <<: *basic-job
     docker:
       - image: docker:git
         environment:
@@ -16,10 +24,8 @@ jobs:
           paths: artifacts
       - store_artifacts:
           path: artifacts
-    working_directory: ~/docker-glibc-builder
   upload-master:
-    docker:
-      - image: golang:alpine
+    <<: *artefact-upload-job
     steps:
       - run: apk add --no-cache git openssh-client
       - checkout
@@ -27,10 +33,8 @@ jobs:
       - deploy:
           name: Upload to GitHub release
           command: ghr -u sgerrand --prerelease --delete unreleased artifacts
-    working_directory: ~/docker-glibc-builder
   upload-tag:
-    docker:
-      - image: golang:alpine
+    <<: *artefact-upload-job
     steps:
       - run: apk add --no-cache git openssh-client
       - checkout
@@ -38,7 +42,6 @@ jobs:
       - deploy:
           name: Upload to GitHub release
           command: ghr -u sgerrand $CIRCLE_TAG artifacts/
-    working_directory: ~/docker-glibc-builder
 workflows:
   version: 2
   build-compile-upload:
