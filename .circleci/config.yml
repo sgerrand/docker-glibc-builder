@@ -29,7 +29,7 @@ jobs:
       - setup_remote_docker
       - run: mkdir -p artifacts
       - run: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
-      - run: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz
+      - run: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
       - persist_to_workspace:
           root: .
           paths: artifacts
@@ -44,36 +44,16 @@ jobs:
       - deploy:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artifacts
-  upload-tag:
-    <<: *artefact-upload-job
-    steps:
-      - *artefact-packages
-      - *artefact-attach-workspace
-      - *artefact-ghr
-      - deploy:
-          name: Upload to GitHub release
-          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME $CIRCLE_TAG artifacts/
 workflows:
   version: 2
   build-compile-upload:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
+      - build
       - upload-master:
           filters:
             branches:
               only: master
             tags:
               ignore: /.*/
-          requires:
-            - build
-      - upload-tag:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
           requires:
             - build
