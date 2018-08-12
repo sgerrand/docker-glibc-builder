@@ -1,0 +1,76 @@
+version: 2
+references:
+  basic-job: &basic-job
+    working_directory: ~/docker-glibc-builder
+  artefact-upload-job: &artefact-upload-job
+    <<: *basic-job
+    docker:
+      - image: golang:alpine
+  artefact-packages: &artefact-packages
+    run:
+      command: apk add --no-cache git openssh-client
+      name: Install dependencies of go get
+  artefact-ghr: &artefact-ghr
+    run:
+      command: go get github.com/tcnksm/ghr
+      name: Install ghr executable
+jobs:
+  build:
+    <<: *basic-job
+    docker:
+      - image: docker:git
+        environment:
+          GLIBC_VERSION: 2.28
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: mkdir -p artifacts
+      - run: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
+      - run: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz
+      - persist_to_workspace:
+          root: .
+          paths: artifacts
+      - store_artifacts:
+          path: artifacts
+  upload-master:
+    <<: *artefact-upload-job
+    steps:
+      - *artefact-packages
+      - checkout
+      - *artefact-ghr
+      - deploy:
+          name: Upload to GitHub release
+          command: ghr -u sgerrand --prerelease --delete unreleased artifacts
+  upload-tag:
+    <<: *artefact-upload-job
+    steps:
+      - *artefact-packages
+      - checkout
+      - *artefact-ghr
+      - deploy:
+          name: Upload to GitHub release
+          command: ghr -u sgerrand $CIRCLE_TAG artifacts/
+workflows:
+  version: 2
+  build-compile-upload:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - upload-master:
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /.*/
+          requires:
+            - build
+      - upload-tag:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - build
