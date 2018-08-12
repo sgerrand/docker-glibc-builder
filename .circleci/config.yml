@@ -43,7 +43,7 @@ jobs:
       - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
-          command: ghr -u sgerrand --prerelease --delete unreleased artifacts
+          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artifacts
   upload-tag:
     <<: *artefact-upload-job
     steps:
@@ -52,7 +52,7 @@ jobs:
       - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
-          command: ghr -u sgerrand $CIRCLE_TAG artifacts/
+          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME $CIRCLE_TAG artifacts/
 workflows:
   version: 2
   build-compile-upload:
