@@ -20,7 +20,7 @@ jobs:
     docker:
       - image: docker:git
         environment:
-          GLIBC_VERSION: 2.24
+          GLIBC_VERSION: 2.28
     steps:
       - checkout
       - setup_remote_docker
