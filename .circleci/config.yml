@@ -33,7 +33,6 @@ jobs:
 
             if [ "$CIRCLE_TAG" = "master" ]; then
               ghr -u sgerrand --prerelease --delete unreleased artifacts
-              ghr -u sgerrand --prerelease unreleased artifacts
             fi
     working_directory: ~/docker-glibc-builder
 workflows:
