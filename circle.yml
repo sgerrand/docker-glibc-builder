@@ -15,7 +15,7 @@ dependencies:
     - git fetch --tags
     - go get github.com/tcnksm/ghr
   override:
-    - docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
+    - docker build --tag sgerrand/glibc-builder:$CIRCLE_SHA1 .
 test:
   pre:
     - mkdir -p artifacts
