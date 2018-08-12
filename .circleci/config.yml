@@ -11,27 +11,11 @@ jobs:
       - run: mkdir -p artifacts
       - run: docker build --tag sgerrand/glibc-builder:$CIRCLE_SHA1 .
       - run: docker run --rm -e STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz
-      - run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD $DOCKER_REGISTRY
-      - run: docker push sgerrand/glibc-builder:$CIRCLE_SHA1
       - persist_to_workspace:
           root: ~/docker-glibc-builder
           paths: artifacts
       - store_artifacts:
           path: artifacts
-    working_directory: ~/docker-glibc-builder
-  tag-master-push:
-    docker:
-      - image: docker:git
-    steps:
-      - setup_remote_docker
-      - run: docker pull sgerrand/glibc-builder:$CIRCLE_SHA1
-      - deploy:
-          name: Tag latest Docker image
-          command: |
-            if [ "$CIRCLE_BRANCH" = "master" ]; then
-              docker tag sgerrand/glibc-builder:$CIRCLE_SHA1 sgerrand/glibc-builder:latest
-              docker push sgerrand/glibc-builder:latest
-            fi
     working_directory: ~/docker-glibc-builder
   upload:
     docker:
@@ -57,9 +41,6 @@ workflows:
   build-compile-upload:
     jobs:
       - build
-      - tag-master-push:
-          requires:
-            - build
       - upload:
           requires:
             - build
