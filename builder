@@ -8,7 +8,7 @@ main() {
 	: "${version:?}" "${prefix:?}"
 
 	{
-		wget -qO- "http://ftp.gnu.org/gnu/glibc/glibc-$version.tar.gz" \
+		wget -qO- "https://ftpmirror.gnu.org/libc/glibc-$version.tar.gz" \
 			| tar zxf -
 		mkdir -p /glibc-build && cd /glibc-build
 		"/glibc-$version/configure" \
