@@ -20,7 +20,7 @@ jobs:
       - run: docker build --tag sgerrand/glibc-builder:$CIRCLE_SHA1 .
       - run: docker run --rm -e STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-$(uname -m).tar.gz
       - persist_to_workspace:
-          root: ~/docker-glibc-builder
+          root: .
           paths: artifacts
       - store_artifacts:
           path: artifacts
