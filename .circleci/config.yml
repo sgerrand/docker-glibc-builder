@@ -6,6 +6,9 @@ references:
     <<: *basic-job
     docker:
       - image: golang:alpine
+  artefact-attach-workspace: &artefact-attach-workspace
+    attach_workspace:
+      at: .
   artefact-packages: &artefact-packages
     run:
       command: apk add --no-cache git openssh-client
@@ -36,7 +39,7 @@ jobs:
     <<: *artefact-upload-job
     steps:
       - *artefact-packages
-      - checkout
+      - *artefact-attach-workspace
       - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
@@ -45,7 +48,7 @@ jobs:
     <<: *artefact-upload-job
     steps:
       - *artefact-packages
-      - checkout
+      - *artefact-attach-workspace
       - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
