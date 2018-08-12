@@ -6,6 +6,14 @@ references:
     <<: *basic-job
     docker:
       - image: golang:alpine
+  artefact-packages: &artefact-packages
+    run:
+      command: apk add --no-cache git openssh-client
+      name: Install dependencies of go get
+  artefact-ghr: &artefact-ghr
+    run:
+      command: go get github.com/tcnksm/ghr
+      name: Install ghr executable
 jobs:
   build:
     <<: *basic-job
@@ -27,18 +35,18 @@ jobs:
   upload-master:
     <<: *artefact-upload-job
     steps:
-      - run: apk add --no-cache git openssh-client
+      - *artefact-packages
       - checkout
-      - run: go get github.com/tcnksm/ghr
+      - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
           command: ghr -u sgerrand --prerelease --delete unreleased artifacts
   upload-tag:
     <<: *artefact-upload-job
     steps:
-      - run: apk add --no-cache git openssh-client
+      - *artefact-packages
       - checkout
-      - run: go get github.com/tcnksm/ghr
+      - *artefact-ghr
       - deploy:
           name: Upload to GitHub release
           command: ghr -u sgerrand $CIRCLE_TAG artifacts/
