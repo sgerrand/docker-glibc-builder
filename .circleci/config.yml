@@ -1,51 +1,50 @@
-version: 2
-references:
-  basic-job: &basic-job
-    working_directory: ~/docker-glibc-builder
-  artefact-upload-job: &artefact-upload-job
-    <<: *basic-job
-    docker:
-      - image: golang:alpine
-  artefact-attach-workspace: &artefact-attach-workspace
-    attach_workspace:
-      at: .
-  artefact-packages: &artefact-packages
-    run:
-      command: apk add --no-cache git openssh-client
-      name: Install dependencies of go get
-  artefact-ghr: &artefact-ghr
-    run:
-      command: go get github.com/tcnksm/ghr
-      name: Install ghr executable
-jobs:
-  build:
-    <<: *basic-job
+version: 2.1
+executors:
+  builder:
     docker:
       - image: docker:git
-        environment:
-          GLIBC_VERSION: 2.29
+    environment:
+      GLIBC_VERSION: 2.29
+    working_directory: ~/docker-glibc-builder
+  artefact-uploader:
+    docker:
+      - image: golang:alpine
+    working_directory: ~/docker-glibc-builder
+jobs:
+  build:
+    executor: builder
     steps:
       - checkout
       - setup_remote_docker
-      - run: mkdir -p artifacts
-      - run: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
-      - run: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artifacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+      - run:
+          command: mkdir -p artefacts
+          name: Create directory for storing artefacts
+      - run:
+          command: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
+          name: Create Docker image
+      - run:
+          command: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+          name: Build glibc package
       - persist_to_workspace:
           root: .
-          paths: artifacts
+          paths: artefacts
       - store_artifacts:
-          path: artifacts
+          path: artefacts
   upload-master:
-    <<: *artefact-upload-job
+    executor: artefact-uploader
     steps:
-      - *artefact-packages
-      - *artefact-attach-workspace
-      - *artefact-ghr
+      - run:
+          command: apk add --no-cache git openssh-client
+          name: Install dependencies of go get
+      - attach_workspace:
+          at: .
+      - run:
+          command: go get github.com/tcnksm/ghr
+          name: Install ghr executable
       - deploy:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artifacts
 workflows:
-  version: 2
   build-compile-upload:
     jobs:
       - build
