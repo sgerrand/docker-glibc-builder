@@ -43,7 +43,7 @@ jobs:
           name: Install ghr executable
       - deploy:
           name: Upload to GitHub release
-          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artifacts
+          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artefacts
 workflows:
   build-compile-upload:
     jobs:
