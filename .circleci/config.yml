@@ -23,7 +23,7 @@ jobs:
           command: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
           name: Create Docker image
       - run:
-          command: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 $GLIBC_VERSION /usr/glibc-compat > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+          command: docker run --rm --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 "$GLIBC_VERSION" /usr/glibc-compat > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
           name: Build glibc package
       - persist_to_workspace:
           root: .
