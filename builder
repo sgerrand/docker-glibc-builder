@@ -18,7 +18,7 @@ main() {
 			--enable-multi-arch \
 			--enable-stack-protector=strong
 		make && make install
-		tar --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
+		tar --dereference --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
 	} >&2
 
 	[[ $STDOUT ]] && cat "/glibc-bin-$version.tar.gz"
