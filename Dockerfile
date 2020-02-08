@@ -1,7 +1,7 @@
 FROM ubuntu:19.04
 MAINTAINER Sasha Gerrand <github+docker-glibc-builder@sgerrand.com>
 ENV PREFIX_DIR /usr/glibc-compat
-ENV GLIBC_VERSION 2.30
+ENV GLIBC_VERSION 2.31
 RUN apt-get -q update \
 	&& apt-get -qy install \
 		bison \
