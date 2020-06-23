@@ -20,10 +20,10 @@ jobs:
           command: mkdir -p artefacts
           name: Create directory for storing artefacts
       - run:
-          command: docker build . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
-          name: Create Docker image
+          command: ./build.sh
+          name: Create Multi-arch Docker images
       - run:
-          command: docker run --rm --env GLIBC_VERSION --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+          command: ./buildpackage.sh
           name: Build glibc package
       - persist_to_workspace:
           root: .
