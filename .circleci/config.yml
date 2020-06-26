@@ -20,8 +20,14 @@ jobs:
           command: mkdir -p artefacts
           name: Create directory for storing artefacts
       - run:
-          command: ./build.sh
-          name: Create and push Multi-arch Docker images
+          command: docker run --rm --privileged multiarch/qemu-user-static --reset --publish yes
+          name: Set builder image
+      - run:
+          command: docker buildx create --use --name multi-builder --platform linux/arm64,linux/amd64
+          name: Create a new builder instance
+      - run:
+          command: docker buildx build --platform linux/amd64,linux/arm64 . --tag sgerrand/glibc-builder:$CIRCLE_SHA1
+          name: Create multi-arch Docker image
       - run:
           command: docker run --rm --env GLIBC_VERSION --env STDOUT=1 sgerrand/glibc-builder:$CIRCLE_SHA1 > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
           name: Build glibc package
