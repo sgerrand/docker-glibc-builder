@@ -1,10 +1,11 @@
 version: 2.1
 executors:
   builder:
-    docker:
-      - image: docker:git
+    machine:
+      image: ubuntu-1604:202004-01
     environment:
       GLIBC_VERSION: 2.31
+      DOCKER_CLI_EXPERIMENTAL: enabled
     working_directory: ~/docker-glibc-builder
   artefact-uploader:
     docker:
@@ -15,7 +16,6 @@ jobs:
     executor: builder
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           command: mkdir -p artefacts
           name: Create directory for storing artefacts
