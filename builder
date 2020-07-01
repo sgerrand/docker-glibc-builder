@@ -3,9 +3,9 @@
 set -eo pipefail; [[ "$TRACE" ]] && set -x
 
 main() {
-	declare version="${1:-$GLIBC_VERSION}" prefix="${2:-$PREFIX_DIR}"
+	declare version="${1:-$GLIBC_VERSION}" prefix="${2:-$PREFIX_DIR}" addconf="${3:-$ADD_CONF}"
 
-	: "${version:?}" "${prefix:?}"
+	: "${version:?}" "${prefix:?}" "${addconf:?}"
 
 	{
 		wget -qO- "https://ftpmirror.gnu.org/libc/glibc-$version.tar.gz" \
@@ -16,7 +16,7 @@ main() {
 			--libdir="$prefix/lib" \
 			--libexecdir="$prefix/lib" \
 			--enable-multi-arch \
-			--enable-stack-protector=strong
+			--enable-stack-protector=strong $addconf
 		make && make install
 		tar --dereference --hard-dereference -zcf "/glibc-bin-$version.tar.gz" "$prefix"
 	} >&2
