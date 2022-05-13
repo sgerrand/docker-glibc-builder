@@ -4,7 +4,7 @@ executors:
     docker:
       - image: docker:git
     environment:
-      GLIBC_VERSION: 2.31
+      GLIBC_VERSION: 2.35
     working_directory: ~/docker-glibc-builder
   artefact-uploader:
     docker:
