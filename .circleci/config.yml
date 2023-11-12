@@ -30,6 +30,38 @@ jobs:
           paths: artefacts
       - store_artifacts:
           path: artefacts
+  build-arm64:
+    executor: builder
+    working_directory: ~/docker-glibc-builder
+    steps:
+       - checkout
+       - attach_workspace:
+           at: ~/docker-glibc-builder
+       - setup_remote_docker
+       - run:
+          command: mkdir -p artefacts
+          name: Create directory for storing artefacts
+       - run:
+           name: Activate QEMU
+           command:
+             docker run -it --rm --privileged multiarch/qemu-user-static  --reset --credential yes --persistent yes
+       - run:
+           name: Build Glibc for ARM64
+           no_output_timeout: 30m
+           command: |
+             docker build -t odidev/glibc-builder:$CIRCLE_SHA1 -f Dockerfile.aarch64  .
+             docker run --rm --env GLIBC_VERSION --env STDOUT=1 odidev/glibc-builder:$CIRCLE_SHA1 >  artefacts/glibc-bin-$GLIBC_VERSION-0-aarch64.tar.gz
+       - persist_to_workspace:
+           root: .
+           paths: artefacts
+       - store_artifacts:
+           path: artefacts
+       - persist_to_workspace:
+           root: .
+           paths: artefacts
+       - store_artifacts:
+           path: artefacts
+
   upload-master:
     executor: artefact-uploader
     steps:
@@ -56,3 +88,15 @@ workflows:
               ignore: /.*/
           requires:
             - build
+
+  build-arm64-compile-upload:
+    jobs:
+      - build-arm64
+      - upload-master:
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /.*/
+          requires:
+            - build-arm64
