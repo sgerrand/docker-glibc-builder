@@ -21,7 +21,7 @@ jobs:
       - name: Create directory for storing artefacts
         run: mkdir -p artefacts
       - name: Create Docker image
-        run: docker build . --file Dockerfile --tag sgerrand/glibc-builder:$GITHUB_SHA1
+        run: docker build . --file Dockerfile --tag sgerrand/glibc-builder:$GITHUB_SHA
       - name: Compile glibc package
-        run: docker run --rm --env GLIBC_VERSION --env STDOUT=1 sgerrand/glibc-builder:$GITHUB_SHA1 > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+        run: docker run --rm --env GLIBC_VERSION --env STDOUT=1 sgerrand/glibc-builder:$GITHUB_SHA > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
 
