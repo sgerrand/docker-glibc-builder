@@ -1,0 +1,25 @@
+name: Build binaries
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  GLIBC_VERSION: 2.38
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create directory for storing artefacts
+        run: mkdir -p artefacts
+      - name: Create Docker image
+        run: docker build . --file Dockerfile --tag sgerrand/glibc-builder:$GITHUB_SHA1
+      - name: Compile glibc package
+        run: docker run --rm --env GLIBC_VERSION --env STDOUT=1 sgerrand/glibc-builder:$GITHUB_SHA1 > artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+
