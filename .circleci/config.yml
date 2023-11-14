@@ -30,7 +30,7 @@ jobs:
           paths: artefacts
       - store_artifacts:
           path: artefacts
-  upload-master:
+  upload-main:
     executor: artefact-uploader
     steps:
       - run:
@@ -48,10 +48,10 @@ workflows:
   build-compile-upload:
     jobs:
       - build
-      - upload-master:
+      - upload-main:
           filters:
             branches:
-              only: master
+              only: main
             tags:
               ignore: /.*/
           requires:
