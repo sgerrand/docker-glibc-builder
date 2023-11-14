@@ -39,7 +39,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          command: go get github.com/tcnksm/ghr
+          command: go install github.com/tcnksm/ghr@latest
           name: Install ghr executable
       - deploy:
           name: Upload to GitHub release
