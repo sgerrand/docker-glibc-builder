@@ -28,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artefacts
-          path: artefacts/glibc-bin-$GLIBC_VERSION-0-$(uname -m).tar.gz
+          path: artefacts/glibc-bin-*.tar.gz
