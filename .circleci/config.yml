@@ -41,7 +41,7 @@ jobs:
       - run:
           command: go install github.com/tcnksm/ghr@latest
           name: Install ghr executable
-      - deploy:
+      - run:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artefacts
 workflows:
