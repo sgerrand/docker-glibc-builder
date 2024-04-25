@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL maintainer="Sasha Gerrand <github+docker-glibc-builder@sgerrand.com>"
 ENV DEBIAN_FRONTEND=noninteractive \
     GLIBC_VERSION=2.39 \
