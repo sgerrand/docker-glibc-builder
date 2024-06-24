@@ -44,15 +44,42 @@ jobs:
       - deploy:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artefacts
+  upload-tag:
+    executor: artefact-uploader
+    steps:
+      - run:
+          command: apk add --no-cache git openssh-client
+          name: Install dependencies of go get
+      - attach_workspace:
+          at: .
+      - run:
+          command: go install github.com/tcnksm/ghr@latest
+          name: Install ghr executable
+      - deploy:
+          name: Upload to GitHub release
+          command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete $CIRCLE_TAG artefacts
 workflows:
   build-compile-upload:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: .+
+            tags:
+              only: /\d+\.\d+\-\d+/
       - upload-main:
           filters:
             branches:
               only: main
             tags:
               ignore: /.*/
+          requires:
+            - build
+      - upload-tag:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /\d+\.\d+\-\d+/
           requires:
             - build
