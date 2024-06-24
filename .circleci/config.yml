@@ -1,4 +1,15 @@
 version: 2.1
+
+commands:
+  install-ghr:
+    description: Install github.com/tcnksm/ghr
+    steps:
+      - run:
+          command: apk add --no-cache git openssh-client
+          name: Install dependencies of go get
+      - run:
+          command: go install github.com/tcnksm/ghr@latest
+          name: Install ghr executable
 executors:
   builder:
     docker:
@@ -33,28 +44,18 @@ jobs:
   upload-main:
     executor: artefact-uploader
     steps:
-      - run:
-          command: apk add --no-cache git openssh-client
-          name: Install dependencies of go get
+      - install-ghr
       - attach_workspace:
           at: .
-      - run:
-          command: go install github.com/tcnksm/ghr@latest
-          name: Install ghr executable
       - deploy:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete unreleased artefacts
   upload-tag:
     executor: artefact-uploader
     steps:
-      - run:
-          command: apk add --no-cache git openssh-client
-          name: Install dependencies of go get
+      - install-ghr
       - attach_workspace:
           at: .
-      - run:
-          command: go install github.com/tcnksm/ghr@latest
-          name: Install ghr executable
       - deploy:
           name: Upload to GitHub release
           command: ghr -r $CIRCLE_PROJECT_REPONAME -u $CIRCLE_PROJECT_USERNAME --prerelease --delete $CIRCLE_TAG artefacts
