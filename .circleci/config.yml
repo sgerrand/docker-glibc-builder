@@ -5,7 +5,7 @@ executors:
       - image: docker:git
     environment:
       GLIBC_VERSION: 2.39
-    resource_class: large
+    resource_class: arm.large
     working_directory: ~/docker-glibc-builder
   artefact-uploader:
     docker:
