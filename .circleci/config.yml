@@ -1,23 +1,8 @@
 version: 2.1
-executors:
-  builder:
-    docker:
-      - image: docker:git
-    environment:
-      GLIBC_VERSION: 2.39
-    resource_class: arm.large
-    working_directory: ~/docker-glibc-builder
-  artefact-uploader:
-    docker:
-      - image: golang:alpine
-    resource_class: small
-    working_directory: ~/docker-glibc-builder
-jobs:
-  build:
-    executor: builder
+commands:
+  build-glibc:
+    description: Compiles GNU C library against a given architecture.
     steps:
-      - checkout
-      - setup_remote_docker
       - run:
           command: mkdir -p artefacts
           name: Create directory for storing artefacts
@@ -32,6 +17,39 @@ jobs:
           paths: artefacts
       - store_artifacts:
           path: artefacts
+executors:
+  builder-arm:
+    docker:
+      - image: docker:git
+    environment:
+      GLIBC_VERSION: 2.39
+    resource_class: arm.large
+    working_directory: ~/docker-glibc-builder
+  builder-x86:
+    docker:
+      - image: docker:git
+    environment:
+      GLIBC_VERSION: 2.39
+    resource_class: large
+    working_directory: ~/docker-glibc-builder
+  artefact-uploader:
+    docker:
+      - image: golang:alpine
+    resource_class: small
+    working_directory: ~/docker-glibc-builder
+jobs:
+  build-aarch64:
+    executor: builder-arm
+    steps:
+      - checkout
+      - setup_remote_docker
+      - build-glibc
+  build-x86_64:
+    executor: builder-x86
+    steps:
+      - checkout
+      - setup_remote_docker
+      - build-glibc
   upload-main:
     executor: artefact-uploader
     steps:
@@ -49,7 +67,8 @@ jobs:
 workflows:
   build-compile-upload:
     jobs:
-      - build
+      - build-aarch64
+      - build-x86_64
       - upload-main:
           filters:
             branches:
@@ -57,4 +76,5 @@ workflows:
             tags:
               ignore: /.*/
           requires:
-            - build
+            - build-aarch64
+            - build-x86_64
