@@ -5,10 +5,12 @@ executors:
       - image: docker:git
     environment:
       GLIBC_VERSION: 2.39
+    resource_class: large
     working_directory: ~/docker-glibc-builder
   artefact-uploader:
     docker:
       - image: golang:alpine
+    resource_class: small
     working_directory: ~/docker-glibc-builder
 jobs:
   build:
