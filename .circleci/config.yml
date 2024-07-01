@@ -22,14 +22,14 @@ executors:
     docker:
       - image: docker:git
     environment:
-      GLIBC_VERSION: 2.39
+      GLIBC_VERSION: 2.35
     resource_class: arm.large
     working_directory: ~/docker-glibc-builder
   builder-x86:
     docker:
       - image: docker:git
     environment:
-      GLIBC_VERSION: 2.39
+      GLIBC_VERSION: 2.35
     resource_class: large
     working_directory: ~/docker-glibc-builder
   artefact-uploader:
