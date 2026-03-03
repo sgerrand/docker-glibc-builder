@@ -4,12 +4,12 @@ A glibc binary package builder in Docker. Produces a glibc binary package that c
 
 ## Usage
 
-Build a glibc package based on version 2.39 with a prefix of `/usr/glibc-compat`:
+Build a glibc package based on version 2.42 with a prefix of `/usr/glibc-compat`:
 
-    docker run --rm --env STDOUT=1 sgerrand/glibc-builder 2.39 /usr/glibc-compat > glibc-bin.tar.gz
+    docker run --rm --env STDOUT=1 sgerrand/glibc-builder 2.42 /usr/glibc-compat > glibc-bin.tar.gz
 
 You can also keep the container around and copy out the resulting file:
 
-    docker run --name glibc-binary sgerrand/glibc-builder 2.39 /usr/glibc-compat
-    docker cp glibc-binary:/glibc-bin-2.39.tar.gz ./
+    docker run --name glibc-binary sgerrand/glibc-builder 2.42 /usr/glibc-compat
+    docker cp glibc-binary:/glibc-bin-2.42.tar.gz ./
     docker rm glibc-binary
